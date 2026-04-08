@@ -1,0 +1,90 @@
+{
+    "users": [
+        {
+            "id": 1,
+            "username": "admin",
+            "password": "admin123",
+            "name": "Administrator",
+            "role": "admin",
+            "hourly_rate": 0,
+            "task": "No task assigned yet.",
+            "status": "idle",
+            "clock_in_time": null,
+            "break_started_at": null,
+            "accumulated_break_seconds": 0,
+            "pending_hours": 0,
+            "approved_pay": 0
+        },
+        {
+            "id": 1775645858,
+            "username": "Steve",
+            "password": "steve123",
+            "name": "Stephen Otieno Oduor",
+            "role": "employee",
+            "hourly_rate": 60,
+            "task": "Cloning of pharmahub repo",
+            "status": "idle",
+            "clock_in_time": null,
+            "break_started_at": null,
+            "accumulated_break_seconds": 0,
+            "pending_hours": 0,
+            "approved_pay": 56546.4
+        },
+        {
+            "id": 1775645931,
+            "username": "Mary",
+            "password": "mary123",
+            "name": "Mary Wanjiku",
+            "role": "employee",
+            "hourly_rate": 35,
+            "task": "Quality assurance of the newly integrated system",
+            "status": "idle",
+            "clock_in_time": null,
+            "break_started_at": null,
+            "accumulated_break_seconds": 0,
+            "pending_hours": 0,
+            "approved_pay": 18142.25
+        },
+        {
+            "id": 1025469250,
+            "username": "Abdi",
+            "password": "$2y$10$PeCcgVNUD81Z\/fYf9JUUQe3L3xDtVQx5iaAnNQ8zcTQtx3RUt4pMi",
+            "name": "Abdi Guyo",
+            "role": "employee",
+            "hourly_rate": 15,
+            "task": "Integration of POS",
+            "status": "working",
+            "clock_in_time": 1775649823,
+            "break_started_at": null,
+            "accumulated_break_seconds": 0,
+            "pending_hours": 0,
+            "approved_pay": 0.3
+        }
+    ],
+    "payments": [
+        {
+            "id": "payment_69d645e794da80.92669671",
+            "transaction_id": "TXN-7638483F-20260408141119",
+            "employee_id": 1775645931,
+            "employee_name": "Mary Wanjiku",
+            "hours_paid": 0.35,
+            "hourly_rate": 35,
+            "amount": 12.25,
+            "payment_mode": "Mobile Money",
+            "created_at": 1775650279,
+            "approved_by": "Administrator"
+        },
+        {
+            "id": "payment_69d649bf014da7.68193636",
+            "transaction_id": "TXN-9166B961-20260408142743",
+            "employee_id": 1775645858,
+            "employee_name": "Stephen Otieno Oduor",
+            "hours_paid": 0.41,
+            "hourly_rate": 60,
+            "amount": 24.599999999999998,
+            "payment_mode": "Bank Transfer",
+            "created_at": 1775651263,
+            "approved_by": "Administrator"
+        }
+    ]
+}
