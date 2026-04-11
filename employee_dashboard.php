@@ -135,6 +135,18 @@ $totalWorkedHours = (float)$currentUser['pending_hours']
             </p>
         </div>
 
+        <div class="card">
+            <div class="section-heading">
+                <p class="eyebrow">Employee History</p>
+                <h2>Your Profile Details</h2>
+            </div>
+            <p><strong>ID Number:</strong> <?php echo e($currentUser['employee_number']); ?></p>
+            <p><strong>Age:</strong> <?php echo e((int)$currentUser['age']); ?></p>
+            <p><strong>Years of Experience:</strong> <?php echo e((int)$currentUser['years_experience']); ?> years</p>
+            <p><strong>Hourly Rate:</strong> $<?php echo number_format((float)$currentUser['hourly_rate'], 2); ?> / hr</p>
+            <p><strong>Role:</strong> <?php echo e(ucfirst($currentUser['role'])); ?></p>
+        </div>
+
         <div class="card center-card">
             <h2>Time Clock</h2>
             <?php if ($currentUser['status'] === 'idle'): ?>

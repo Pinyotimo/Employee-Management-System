@@ -79,7 +79,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 </div>
                 <button type="submit" class="auth-submit">Login</button>
             </form>
-           
+            <p class="helper-text auth-helper">
+                <a href="signup.php" class="text-link">Create an account</a>
+            </p>
+            <p class="helper-text auth-helper">
+                <a href="forgot_password.php" class="text-link">Forgot password?</a>
+            </p>
             <p class="helper-text auth-helper">
                 <a href="index.php" class="text-link">Back Home</a>
             </p>

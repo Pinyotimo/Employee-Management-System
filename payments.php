@@ -19,7 +19,11 @@ $flash = getFlash();
 $payments = [];
 
 foreach ($db['payments'] as $payment) {
-    if ($role === 'admin' || (string)$payment['employee_id'] === (string)$currentUser['id']) {
+    if ($role === 'admin') {
+        if (($payment['company_id'] ?? 0) === ($currentUser['company_id'] ?? 0)) {
+            $payments[] = $payment;
+        }
+    } elseif ((string)$payment['employee_id'] === (string)$currentUser['id']) {
         $payments[] = $payment;
     }
 }

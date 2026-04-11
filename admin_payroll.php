@@ -6,13 +6,24 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     redirect('login.php');
 }
 
+$currentAdminIndex = findUserIndexById($db, $_SESSION['user_id'] ?? null);
+$currentAdmin = $currentAdminIndex !== null ? $db['users'][$currentAdminIndex] : null;
+
+if ($currentAdmin === null) {
+    session_destroy();
+    redirect('login.php');
+}
+
 // Handle Payroll Approval
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'approve_pay') {
     $employeeId = $_POST['employee_id'] ?? '';
     $paymentMode = trim($_POST['payment_mode'] ?? '');
     $userIndex = findUserIndexById($db, $employeeId);
 
-    if ($userIndex !== null && $db['users'][$userIndex]['role'] !== 'admin') {
+    if ($userIndex !== null
+        && ($db['users'][$userIndex]['company_id'] ?? 0) === ($currentAdmin['company_id'] ?? 0)
+        && $db['users'][$userIndex]['role'] !== 'admin'
+    ) {
         if (!in_array($paymentMode, paymentModes(), true)) {
             setFlash('error', 'Please choose a valid payment mode.');
             redirect('admin_payroll.php');
@@ -31,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'appro
                 'transaction_id' => $transactionId,
                 'employee_id' => $db['users'][$userIndex]['id'],
                 'employee_name' => $db['users'][$userIndex]['name'],
+                'company_id' => $db['users'][$userIndex]['company_id'] ?? 0,
                 'hours_paid' => $hoursPaid,
                 'hourly_rate' => (float)$db['users'][$userIndex]['hourly_rate'],
                 'amount' => $pay,
@@ -99,7 +111,7 @@ $flash = getFlash();
                     <th>Total Approved Pay</th>
                     <th>Payroll Action</th>
                 </tr>
-                <?php foreach ($db['users'] as $u): if ($u['role'] !== 'admin'): ?>
+                <?php foreach ($db['users'] as $u): if ($u['role'] !== 'admin' && ($u['company_id'] ?? 0) === ($currentAdmin['company_id'] ?? 0)): ?>
                 <tr>
                     <td><b><?php echo e($u['name']); ?></b></td>
                     <td>$<?php echo number_format((float)$u['hourly_rate'], 2); ?>/hr</td>

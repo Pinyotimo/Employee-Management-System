@@ -6,18 +6,47 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     redirect('login.php');
 }
 
-// Handle Task Assignment
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assign_task') {
-    $employeeId = $_POST['employee_id'] ?? '';
-    $task = trim($_POST['task'] ?? '');
-    $userIndex = findUserIndexById($db, $employeeId);
+$currentAdminIndex = findUserIndexById($db, $_SESSION['user_id'] ?? null);
+$currentAdmin = $currentAdminIndex !== null ? $db['users'][$currentAdminIndex] : null;
 
-    if ($userIndex !== null && $db['users'][$userIndex]['role'] !== 'admin') {
-        $db['users'][$userIndex]['task'] = $task !== '' ? $task : 'No task assigned yet.';
-        saveDb($db);
-        setFlash('success', 'Task updated successfully.');
-    } else {
-        setFlash('error', 'Unable to update the selected employee.');
+if ($currentAdmin === null) {
+    session_destroy();
+    redirect('login.php');
+}
+
+// Handle Task Assignment
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (($_POST['action'] ?? '') === 'assign_task') {
+        $employeeId = $_POST['employee_id'] ?? '';
+        $task = trim($_POST['task'] ?? '');
+        $userIndex = findUserIndexById($db, $employeeId);
+
+        if ($userIndex !== null
+            && $db['users'][$userIndex]['role'] !== 'admin'
+            && ($db['users'][$userIndex]['company_id'] ?? 0) === ($currentAdmin['company_id'] ?? 0)
+        ) {
+            $db['users'][$userIndex]['task'] = $task !== '' ? $task : 'No task assigned yet.';
+            saveDb($db);
+            setFlash('success', 'Task updated successfully.');
+        } else {
+            setFlash('error', 'Unable to update the selected employee.');
+        }
+    } elseif (($_POST['action'] ?? '') === 'delete_employee') {
+        $employeeId = $_POST['employee_id'] ?? '';
+        $userIndex = findUserIndexById($db, $employeeId);
+
+        if ($userIndex !== null
+            && ($db['users'][$userIndex]['company_id'] ?? 0) === ($currentAdmin['company_id'] ?? 0)
+            && $db['users'][$userIndex]['role'] === 'employee'
+        ) {
+            array_splice($db['users'], $userIndex, 1);
+            saveDb($db);
+            setFlash('success', 'Employee deleted successfully.');
+        } elseif ($userIndex !== null && $db['users'][$userIndex]['role'] !== 'employee') {
+            setFlash('error', 'Only employee accounts can be deleted from this screen.');
+        } else {
+            setFlash('error', 'Unable to find the employee to delete.');
+        }
     }
 
     redirect('admin_roster.php');
@@ -58,20 +87,22 @@ $flash = getFlash();
             <div class="section-heading">
                 <p class="eyebrow">Operations</p>
                 <h2>Employee Roster & Task Management</h2>
-                <p>Monitor who is currently working and keep task assignments current.</p>
+                <p>Monitor who is currently working and keep task assignments current. Use View to open employee profile, reset credentials, or edit/delete.</p>
             </div>
             <?php if ($flash): ?>
                 <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
-            <table>
-                <tr>
-                    <th>Name</th>
-                    <th>Current Status</th>
-                    <th>Live Timer</th>
-                    <th>Worked Hours</th>
-                    <th>Task Assignment</th>
-                </tr>
-                <?php foreach ($db['users'] as $u): if ($u['role'] !== 'admin'): ?>
+            <div class="table-responsive">
+                <table>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Timer</th>
+                        <th>Worked Hours</th>
+                        <th>Task</th>
+                        <th>Actions</th>
+                    </tr>
+                <?php foreach ($db['users'] as $u): if ($u['role'] !== 'admin' && ($u['company_id'] ?? 0) === ($currentAdmin['company_id'] ?? 0)): ?>
                 <?php
                     $liveSeconds = workedSecondsForUser($u);
                     $baseWorkedHours = (float)$u['pending_hours']
@@ -79,13 +110,16 @@ $flash = getFlash();
                     $workedHours = $baseWorkedHours + ($liveSeconds / 3600);
                     $statusClass = $u['status'] === 'working' ? 'bg-green' : ($u['status'] === 'paused' ? 'bg-amber' : 'bg-gray');
                     $statusLabel = $u['status'] === 'working'
-                        ? 'WORKING (Active)'
-                        : ($u['status'] === 'paused' ? 'ON BREAK (Paused)' : 'IDLE (Inactive)');
+                        ? 'ACTIVE'
+                        : ($u['status'] === 'paused' ? 'ON BREAK (Paused)' : 'INACTIVE');
                 ?>
                 <tr>
                     <td>
                         <b><?php echo e($u['name']); ?></b>
                         <div class="table-subtext">@<?php echo e($u['username']); ?></div>
+                        <?php if (trim((string)$u['email']) !== ''): ?>
+                            
+                        <?php endif; ?>
                     </td>
                     <td>
                         <span class="badge <?php echo e($statusClass); ?>">
@@ -123,8 +157,7 @@ $flash = getFlash();
                         >
                             <?php echo number_format($workedHours, 2); ?> hrs
                         </b>
-                        <div class="table-subtext">Pending <?php echo number_format((float)$u['pending_hours'], 2); ?> hrs</div>
-                    </td>
+                         </td>
                     <td class="task-cell">
                         <form method="POST" class="inline-form">
                             <input type="hidden" name="action" value="assign_task">
@@ -133,9 +166,13 @@ $flash = getFlash();
                             <button type="submit" style="padding: 5px;">Assign</button>
                         </form>
                     </td>
+                    <td>
+                        <a href="admin_view_employee.php?employee_id=<?php echo e($u['id']); ?>" class="view-button">View</a>
+                    </td>
                 </tr>
                 <?php endif; endforeach; ?>
             </table>
+            </div>
         </div>
     </div>
 

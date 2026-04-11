@@ -12,7 +12,9 @@ if (!file_exists($dataFile)) {
                 'username' => 'admin',
                 'password' => password_hash('admin123', PASSWORD_DEFAULT),
                 'role' => 'admin',
-                'name' => 'Administrator'
+                'name' => 'Administrator',
+                'company_id' => 1,
+                'company_name' => 'Default Company'
             ]
         ]
     ];
@@ -68,8 +70,14 @@ function normalizeUser(array $user): array {
         'id' => 0,
         'username' => '',
         'password' => '',
+        'email' => '',
+        'employee_number' => '',
+        'age' => 0,
+        'years_experience' => 0,
         'name' => '',
         'role' => 'employee',
+        'company_id' => 0,
+        'company_name' => '',
         'hourly_rate' => 0,
         'task' => 'No task assigned yet.',
         'status' => 'idle',
@@ -77,7 +85,9 @@ function normalizeUser(array $user): array {
         'break_started_at' => null,
         'accumulated_break_seconds' => 0,
         'pending_hours' => 0,
-        'approved_pay' => 0
+        'approved_pay' => 0,
+        'password_reset_token_hash' => '',
+        'password_reset_expires_at' => 0
     ];
 
     return array_merge($defaults, $user);
@@ -89,6 +99,7 @@ function normalizePayment(array $payment): array {
         'transaction_id' => '',
         'employee_id' => 0,
         'employee_name' => '',
+        'company_id' => 0,
         'hours_paid' => 0,
         'hourly_rate' => 0,
         'amount' => 0,
@@ -127,6 +138,32 @@ function findUserByUsername(array $db, string $username): ?array {
     }
 
     return null;
+}
+
+function findUserIndexByResetToken(array $db, string $token): ?int {
+    foreach ($db['users'] as $index => $user) {
+        $hash = (string)($user['password_reset_token_hash'] ?? '');
+        $expiresAt = (int)($user['password_reset_expires_at'] ?? 0);
+
+        if ($hash !== '' && $expiresAt >= time() && password_verify($token, $hash)) {
+            return $index;
+        }
+    }
+
+    return null;
+}
+
+function clearPasswordResetToken(array &$db, int $userIndex): void {
+    $db['users'][$userIndex]['password_reset_token_hash'] = '';
+    $db['users'][$userIndex]['password_reset_expires_at'] = 0;
+}
+
+function generatePasswordResetToken(array &$db, int $userIndex): string {
+    $token = bin2hex(random_bytes(32));
+    $db['users'][$userIndex]['password_reset_token_hash'] = password_hash($token, PASSWORD_DEFAULT);
+    $db['users'][$userIndex]['password_reset_expires_at'] = time() + 3600;
+
+    return $token;
 }
 
 function passwordMatches(array $user, string $password): bool {
