@@ -58,6 +58,7 @@ $flash = getFlash();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Roster</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -93,7 +94,7 @@ $flash = getFlash();
                 <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
             <div class="table-responsive">
-                <table>
+                <table class="roster-table">
                     <tr>
                         <th>Name</th>
                         <th>Status</th>
@@ -114,19 +115,19 @@ $flash = getFlash();
                         : ($u['status'] === 'paused' ? 'ON BREAK (Paused)' : 'INACTIVE');
                 ?>
                 <tr>
-                    <td>
+                    <td data-label="Name">
                         <b><?php echo e($u['name']); ?></b>
                         <div class="table-subtext">@<?php echo e($u['username']); ?></div>
                         <?php if (trim((string)$u['email']) !== ''): ?>
                             
                         <?php endif; ?>
                     </td>
-                    <td>
+                    <td data-label="Status">
                         <span class="badge <?php echo e($statusClass); ?>">
                             <?php echo e($statusLabel); ?>
                         </span>
                     </td>
-                    <td>
+                    <td data-label="Timer">
                         <?php if (in_array($u['status'], ['working', 'paused'], true) && !empty($u['clock_in_time'])): ?>
                             <span
                                 class="live-timer"
@@ -145,7 +146,7 @@ $flash = getFlash();
                             <span class="muted-label">Not on shift</span>
                         <?php endif; ?>
                     </td>
-                    <td>
+                    <td data-label="Worked Hours">
                         <b
                             class="worked-hours"
                             data-target="worked-hours"
@@ -158,15 +159,15 @@ $flash = getFlash();
                             <?php echo number_format($workedHours, 2); ?> hrs
                         </b>
                          </td>
-                    <td class="task-cell">
+                    <td class="task-cell" data-label="Task">
                         <form method="POST" class="inline-form">
                             <input type="hidden" name="action" value="assign_task">
                             <input type="hidden" name="employee_id" value="<?php echo e($u['id']); ?>">
                             <input type="text" name="task" value="<?php echo e($u['task']); ?>" required placeholder="Enter task...">
-                            <button type="submit" style="padding: 5px;">Assign</button>
+                            <button type="submit" class="action-button">Assign</button>
                         </form>
                     </td>
-                    <td>
+                    <td data-label="Actions">
                         <a href="admin_view_employee.php?employee_id=<?php echo e($u['id']); ?>" class="view-button">View</a>
                     </td>
                 </tr>

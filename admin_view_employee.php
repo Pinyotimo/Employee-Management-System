@@ -39,17 +39,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Employee - <?php echo e($user['name']); ?></title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* Local layout styles for the profile data grid */
         .profile-container {
-            max-width: 650px; /* Slightly wider to accommodate the grid */
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 28px 28px 24px;
+            border-radius: 28px;
+            background: rgba(201, 210, 184, 0.96);
+            box-shadow: 0 30px 70px rgba(15, 76, 129, 0.1);
+            border: 1px solid rgba(15, 76, 129, 0.08);
         }
         .profile-section {
             margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border-color, #e2e8f0);
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(15, 76, 129, 0.12);
         }
         .profile-section:last-of-type {
             border-bottom: none;
@@ -57,102 +64,160 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
             padding-bottom: 0;
         }
         .profile-section h3 {
-            font-size: 1.05rem;
-            margin-bottom: 12px;
-            color: #334155;
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            color: #1e293b;
             font-weight: 700;
         }
         .profile-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 18px;
         }
         .info-group {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(15, 76, 129, 0.08);
+            background: #fff;
+            box-shadow: 0 14px 28px rgba(15, 76, 129, 0.04);
         }
         .info-label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             color: var(--muted-text, #64748b);
             font-weight: 700;
         }
         .info-value {
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: var(--text-color, #0f172a);
-            font-weight: 500;
+            font-weight: 600;
+            line-height: 1.5;
         }
         .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
             border-radius: 9999px;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
             background-color: #f1f5f9;
             color: #475569;
             width: fit-content;
         }
-        .status-badge.active { background-color: #dcfce7; color: #166534; }
+        .status-badge.active { background-color: #4ebe75; color: #166534; }
+        .status-badge.paused { background-color: #fef3c7; color: #92400e; }
         .status-badge.idle { background-color: #fee2e2; color: #991b1b; }
-        
         .action-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
             margin-top: 24px;
         }
+        .action-grid .view-button {
+            width: 80%;
+            justify-content: center;
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 0.98rem;
+        }
         .btn-danger {
-            background-color: #ef4444;
+            background-color: #8d0909;
             color: white;
             border: none;
-            padding: 12px 16px;
-            border-radius: 6px;
+            padding: 14px 18px;
+            border-radius: 16px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             width: 100%;
+            display:flex;
+           
             text-align: center;
-            transition: background 0.2s;
+            justify-content: center;
+            transition: background 0.2s ease;
             font-size: 0.95rem;
         }
         .btn-danger:hover { background-color: #dc2626; }
-
+        .auth-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #2563eb, #0f172a);
+            color: white;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            box-shadow: 0 12px 26px rgba(15, 76, 129, 0.18);
+        }
+        .auth-card-top {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+        .section-heading h2 {
+            font-size: 2rem;
+            margin: 0;
+            line-height: 1.1;
+        }
+        .section-heading p {
+            color: var(--muted-text, #64748b);
+            max-width: 760px;
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-top: 10px;
+        }
+        .helper-text {
+            margin-top: 26px;
+        }
+        @media (max-width: 860px) {
+            .profile-container {
+                padding: 24px 20px 22px;
+            }
+            .section-heading h2 {
+                font-size: 1.8rem;
+            }
+            .profile-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            }
+        }
         @media (max-width: 760px) {
             .profile-container {
                 max-width: 100%;
-                padding: 0 14px;
+                padding: 22px 16px 20px;
             }
-
             .profile-section {
                 padding: 18px 0;
             }
-
             .profile-grid {
                 grid-template-columns: 1fr;
             }
-
-            .profile-grid .info-group {
-                gap: 6px;
-            }
-
             .action-grid {
                 grid-template-columns: 1fr;
             }
-
             .auth-card-top {
-                gap: 14px;
+                flex-direction: column;
+                align-items: stretch;
             }
-
-            .auth-badge {
-                display: inline-flex;
-                padding: 8px 12px;
-                font-size: 0.75rem;
-            }
-
             .section-heading h2 {
-                font-size: 1.5rem;
+                font-size: 1.7rem;
+            }
+            .section-heading p {
+                font-size: 0.96rem;
+            }
+            .profile-container {
+                border-radius: 24px;
+            }
+            .auth-badge {
+                padding: 8px 14px;
             }
         }
     </style>
@@ -227,8 +292,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
                     </div>
                     <div class="info-group">
                         <span class="info-label">State</span>
-                        <?php $statusClass = (strtolower($user['status'] ?? 'idle') === 'active') ? 'active' : 'idle'; ?>
-                        <span class="status-badge <?php echo $statusClass; ?>"><?php echo e($user['status'] ?? 'idle'); ?></span>
+                        <?php
+                            $rawStatus = strtolower(trim((string)($user['status'] ?? 'idle')));
+                            $statusClass = $rawStatus === 'working' ? 'active' : ($rawStatus === 'paused' ? 'paused' : 'idle');
+                        ?>
+                        <span class="status-badge <?php echo $statusClass; ?>"><?php echo e(ucwords($rawStatus)); ?></span>
                     </div>
                     <div class="info-group">
                         <span class="info-label">Pending Hours</span>

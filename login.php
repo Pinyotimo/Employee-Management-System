@@ -39,6 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - System</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -61,6 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <?php endif; ?>
             <form method="POST" class="auth-form">
                 <input type="hidden" name="action" value="login">
+                <div class="demo-credentials">
+                    <strong>Demo admin login:</strong>
+                    <span>Username: <code>admin</code> | Password: <code>admin123</code></span>
+                </div>
                 <div class="form-group">
                     <label>Sign In As</label>
                     <select name="role" required>
