@@ -46,6 +46,7 @@ if ($token !== '' && $userIndex === null) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -62,7 +63,7 @@ if ($token !== '' && $userIndex === null) {
             </div>
 
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo e($error); ?></div>
@@ -95,5 +96,6 @@ if ($token !== '' && $userIndex === null) {
             </p>
         </div>
     </div>
+    <script src="app.js"></script>
 </body>
 </html>

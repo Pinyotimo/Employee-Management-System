@@ -41,6 +41,7 @@ foreach ($payments as $payment) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payments</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -90,7 +91,7 @@ foreach ($payments as $payment) {
                 </p>
             </div>
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
             <div class="stats-grid">
                 <div class="stat-card">
@@ -105,6 +106,7 @@ foreach ($payments as $payment) {
             <?php if (empty($payments)): ?>
                 <div class="empty-state">No payments have been recorded yet.</div>
             <?php else: ?>
+                <div class="table-responsive">
                 <table>
                     <tr>
                         <th>Transaction ID</th>
@@ -117,36 +119,25 @@ foreach ($payments as $payment) {
                     </tr>
                     <?php foreach ($payments as $payment): ?>
                         <tr class="<?php echo $transactionId !== '' && $transactionId === $payment['transaction_id'] ? 'highlight-row' : ''; ?>">
-                            <td>
+                            <td data-label="Transaction ID">
                                 <b><?php echo e($payment['transaction_id']); ?></b>
                                 <div class="table-subtext">Rate: $<?php echo number_format((float)$payment['hourly_rate'], 2); ?>/hr</div>
                             </td>
                             <?php if ($role === 'admin'): ?>
-                                <td><?php echo e($payment['employee_name']); ?></td>
+                                <td data-label="Employee"><?php echo e($payment['employee_name']); ?></td>
                             <?php endif; ?>
-                            <td><?php echo number_format((float)$payment['hours_paid'], 2); ?> hrs</td>
-                            <td>$<?php echo number_format((float)$payment['amount'], 2); ?></td>
-                            <td><?php echo e($payment['payment_mode']); ?></td>
-                            <td><?php echo e($payment['approved_by']); ?></td>
-                            <td><?php echo e(date('M d, Y H:i', (int)$payment['created_at'])); ?></td>
+                            <td data-label="Hours Paid"><?php echo number_format((float)$payment['hours_paid'], 2); ?> hrs</td>
+                            <td data-label="Amount">$<?php echo number_format((float)$payment['amount'], 2); ?></td>
+                            <td data-label="Mode"><?php echo e($payment['payment_mode']); ?></td>
+                            <td data-label="Approved By"><?php echo e($payment['approved_by']); ?></td>
+                            <td data-label="Date"><?php echo e(date('M d, Y H:i', (int)$payment['created_at'])); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
+                </div>
             <?php endif; ?>
         </div>
     </div>
-
-    <script>
-        const navToggle = document.querySelector('.nav-toggle');
-        const navPanel = document.querySelector('.nav-panel');
-
-        if (navToggle && navPanel) {
-            navToggle.addEventListener('click', () => {
-                const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-                navToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-                navPanel.classList.toggle('is-open');
-            });
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>

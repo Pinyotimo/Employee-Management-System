@@ -29,10 +29,11 @@ if (isset($_SESSION['user_id'])) {
         }
 
         .brand {
+            font-family: var(--font-ui);
             font-size: 1.5rem;
             font-weight: 800;
             color: var(--primary-color, #2563eb);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
         }
 
         .hero-grid {
@@ -42,15 +43,20 @@ if (isset($_SESSION['user_id'])) {
             align-items: center;
             margin-top: 60px;
             padding: 60px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.1), transparent 28%),
+                linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
             border: 1px solid #e2e8f0;
         }
 
         .landing-copy h1 {
+            font-family: var(--font-heading);
             font-size: 3rem;
-            line-height: 1.1;
+            line-height: 1.02;
             margin: 15px 0 25px;
             color: #0f172a;
+            letter-spacing: -0.04em;
+            max-width: 10ch;
         }
 
         .hero-stats {
@@ -64,6 +70,7 @@ if (isset($_SESSION['user_id'])) {
 
         .hero-stats strong {
             display: block;
+            font-family: var(--font-heading);
             font-size: 1.1rem;
             color: var(--primary-color);
         }
@@ -87,6 +94,12 @@ if (isset($_SESSION['user_id'])) {
 
         .feature-card:hover {
             transform: translateY(-5px);
+        }
+
+        .feature-card strong,
+        .feature-card h3 {
+            font-family: var(--font-heading);
+            letter-spacing: -0.02em;
         }
 
         .icon-box {
@@ -119,7 +132,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="landing-copy">
                 <p class="eyebrow">Enterprise Solutions for Small Teams</p>
                 <h1>Manage your payroll, people, and progress.</h1>
-                <p class="auth-lead" style="font-size: 1.2rem; color: #475569;">
+                <p class="auth-lead" style="font-size: 1.18rem; color: #475569; max-width: 52ch;">
                     The all-in-one dashboard to track departments, specific job titles, work hours, and payroll with absolute tenant-safe security.
                 </p>
                 <div class="landing-actions">
@@ -144,7 +157,7 @@ if (isset($_SESSION['user_id'])) {
             </div>
 
             <div class="landing-panel">
-                <div class="feature-card" style="background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
+                <div class="feature-card" style="background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 18px 35px rgba(15, 76, 129, 0.12);">
                     <span class="icon-box">🏢</span>
                     <h3 style="margin-bottom: 10px;">Why this system?</h3>
                     <p style="font-size: 0.95rem; line-height: 1.6; color: #64748b;">

@@ -65,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'signu
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up - Employee Project</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -81,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'signu
             </div>
 
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo e($error); ?></div>
@@ -89,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'signu
 
             <form method="POST" class="auth-form">
                 <input type="hidden" name="action" value="signup">
+                <div class="form-grid">
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" name="name" required>
@@ -96,6 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'signu
                 <div class="form-group">
                     <label>Login Username</label>
                     <input type="text" name="username" required>
+                </div>
+                <div class="form-group form-group-full">
+                    <label>Company Name</label>
+                    <input type="text" name="company_name" required>
                 </div>
                 <div class="alert alert-warning">
                     Admin sign-up only. Once logged in, admins can create employee accounts.
@@ -108,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'signu
                     <label>Login Password</label>
                     <input type="password" name="password" minlength="6" required>
                 </div>
+                </div>
                 <button type="submit" class="auth-submit">Sign Up</button>
             </form>
 
@@ -116,5 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'signu
             </p>
         </div>
     </div>
+    <script src="app.js"></script>
 </body>
 </html>

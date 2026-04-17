@@ -96,6 +96,7 @@ $flash = getFlash();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Employee</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -128,11 +129,11 @@ $flash = getFlash();
                 <p>Create a fresh employee login and assign their base hourly rate.</p>
             </div>
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
-            <form method="POST">
+            <form method="POST" class="auth-form">
                 <input type="hidden" name="action" value="add_employee">
-                
+                <div class="form-grid">
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" name="name" required>
@@ -183,22 +184,11 @@ $flash = getFlash();
                     <label>Hourly Rate ($)</label>
                     <input type="number" step="0.01" min="0.01" name="rate" required>
                 </div>
+                </div>
                 <button type="submit">Create Employee Account</button>
             </form>
         </div>
     </div>
-
-    <script>
-        const navToggle = document.querySelector('.nav-toggle');
-        const navPanel = document.querySelector('.nav-panel');
-
-        if (navToggle && navPanel) {
-            navToggle.addEventListener('click', () => {
-                const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-                navToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-                navPanel.classList.toggle('is-open');
-            });
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>

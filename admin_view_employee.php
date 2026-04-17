@@ -58,16 +58,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
             padding-bottom: 22px;
             border-bottom: 1px solid rgba(15, 76, 129, 0.12);
         }
+        .profile-section-body[hidden] {
+            display: none;
+        }
         .profile-section:last-of-type {
             border-bottom: none;
             margin-bottom: 0;
             padding-bottom: 0;
         }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
         .profile-section h3 {
             font-size: 1.1rem;
-            margin-bottom: 14px;
+            margin: 0;
             color: #1e293b;
             font-weight: 700;
+        }
+        .section-toggle {
+            min-width: 84px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            border-radius: 999px;
+            background: #eff6ff;
+            border: 1px solid rgba(15, 76, 129, 0.16);
+            color: #0f4c81;
+            box-shadow: none;
+        }
+        .section-toggle:hover {
+            background: #dbeafe;
         }
         .profile-grid {
             display: grid;
@@ -126,6 +149,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
             border-radius: 16px;
             font-size: 0.98rem;
         }
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 22px 0 12px;
+        }
+        .quick-actions button,
+        .quick-actions .view-button {
+            min-width: 150px;
+            width: auto;
+        }
+        .subtle-button {
+            background: #fff;
+            color: #0f4c81;
+            border: 1px solid rgba(15, 76, 129, 0.16);
+            box-shadow: 0 8px 18px rgba(15, 76, 129, 0.07);
+        }
+        .subtle-button:hover {
+            background: #eff6ff;
+        }
+        .profile-feedback {
+            min-height: 20px;
+            margin: 4px 0 0;
+            color: #0f4c81;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
         .btn-danger {
             background-color: #8d0909;
             color: white;
@@ -178,6 +228,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
         .helper-text {
             margin-top: 26px;
         }
+        .alert {
+            transition: opacity 0.22s ease, transform 0.22s ease;
+        }
+        .alert.is-hiding {
+            opacity: 0;
+            transform: translateY(-6px);
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .quick-actions,
+            .action-grid,
+            form,
+            .helper-text,
+            .section-toggle {
+                display: none !important;
+            }
+            .profile-container {
+                box-shadow: none;
+                border: none;
+                background: white;
+                padding: 0;
+            }
+            .profile-section-body[hidden] {
+                display: block;
+            }
+        }
         @media (max-width: 860px) {
             .profile-container {
                 padding: 24px 20px 22px;
@@ -202,6 +281,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
             }
             .action-grid {
                 grid-template-columns: 1fr;
+            }
+            .quick-actions {
+                flex-direction: column;
+            }
+            .quick-actions button,
+            .quick-actions .view-button {
+                width: 100%;
             }
             .auth-card-top {
                 flex-direction: column;
@@ -235,14 +321,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
             </div>
 
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
             <?php if ($error): ?>
-                <div class="alert alert-error"><?php echo e($error); ?></div>
+                <div class="alert alert-error" data-auto-dismiss="4000"><?php echo e($error); ?></div>
             <?php endif; ?>
 
+            <div class="quick-actions">
+                <button
+                    type="button"
+                    class="subtle-button"
+                    data-copy-value="<?php echo e($user['employee_number']); ?>"
+                    data-copy-success="Employee ID copied."
+                    data-copy-feedback="#profile-feedback"
+                >
+                    Copy Employee ID
+                </button>
+                <button
+                    type="button"
+                    class="subtle-button"
+                    data-copy-value="<?php echo e($user['username']); ?>"
+                    data-copy-success="Username copied."
+                    data-copy-feedback="#profile-feedback"
+                >
+                    Copy Username
+                </button>
+                <?php if (trim((string)($user['email'] ?? '')) !== ''): ?>
+                <button
+                    type="button"
+                    class="subtle-button"
+                    data-copy-value="<?php echo e($user['email']); ?>"
+                    data-copy-success="Email copied."
+                    data-copy-feedback="#profile-feedback"
+                >
+                    Copy Email
+                </button>
+                <?php endif; ?>
+                <button type="button" class="subtle-button" data-print-profile>Print Profile</button>
+            </div>
+            <p id="profile-feedback" class="profile-feedback" aria-live="polite"></p>
+
             <div class="profile-section">
-                <h3>Work Details</h3>
+                <div class="section-header">
+                    <h3>Work Details</h3>
+                    <button type="button" class="section-toggle" data-section-toggle="#work-details" aria-expanded="true">Hide</button>
+                </div>
+                <div class="profile-section-body" id="work-details">
                 <div class="profile-grid">
                     <div class="info-group">
                         <span class="info-label">Employee ID</span>
@@ -261,10 +385,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
                         <span class="info-value">$<?php echo number_format((float)$user['hourly_rate'], 2); ?> / hr</span>
                     </div>
                 </div>
+                </div>
             </div>
 
             <div class="profile-section">
-                <h3>Personal Info</h3>
+                <div class="section-header">
+                    <h3>Personal Info</h3>
+                    <button type="button" class="section-toggle" data-section-toggle="#personal-info" aria-expanded="true">Hide</button>
+                </div>
+                <div class="profile-section-body" id="personal-info">
                 <div class="profile-grid">
                     <div class="info-group">
                         <span class="info-label">Age</span>
@@ -281,10 +410,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
                     </div>
                     <?php endif; ?>
                 </div>
+                </div>
             </div>
 
             <div class="profile-section">
-                <h3>Current Status</h3>
+                <div class="section-header">
+                    <h3>Current Status</h3>
+                    <button type="button" class="section-toggle" data-section-toggle="#current-status" aria-expanded="true">Hide</button>
+                </div>
+                <div class="profile-section-body" id="current-status">
                 <div class="profile-grid">
                     <div class="info-group" style="grid-column: 1 / -1;">
                         <span class="info-label">Active Task</span>
@@ -307,6 +441,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
                         <span class="info-value" style="color: #16a34a; font-weight: 700;">$<?php echo number_format((float)$user['approved_pay'], 2); ?></span>
                     </div>
                 </div>
+                </div>
             </div>
 
             <div class="action-grid">
@@ -314,9 +449,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
                 <a href="admin_reset_password.php?employee_id=<?php echo e($user['id']); ?>" class="view-button">Reset Password</a>
             </div>
 
-            <form method="POST" onsubmit="return confirm('Are you sure you want to completely delete this employee? This action cannot be undone.');" style="margin-top: 12px;">
+            <form
+                method="POST"
+                data-managed-submit
+                data-confirm-message="Are you sure you want to completely delete <?php echo e($user['name']); ?>? This action cannot be undone."
+                style="margin-top: 12px;"
+            >
                 <input type="hidden" name="action" value="delete_employee">
-                <button type="submit" class="btn-danger">Delete Employee</button>
+                <button type="submit" class="btn-danger" data-loading-label="Deleting Employee...">Delete Employee</button>
             </form>
 
             <p class="helper-text auth-helper" style="margin-top: 24px;">
@@ -324,5 +464,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delet
             </p>
         </div>
     </div>
+    <script src="app.js"></script>
 </body>
 </html>
