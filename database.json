@@ -37,12 +37,12 @@
             "company_name": "",
             "hourly_rate": 60,
             "task": "Cloning of pharmahub repo",
-            "status": "paused",
-            "clock_in_time": 1776014952,
-            "break_started_at": 1776014994,
+            "status": "idle",
+            "clock_in_time": null,
+            "break_started_at": null,
             "accumulated_break_seconds": 0,
             "pending_hours": 0,
-            "approved_pay": 56546.4,
+            "approved_pay": 56562,
             "password_reset_token_hash": "",
             "password_reset_expires_at": 0,
             "job_title": "IT lead",
@@ -280,6 +280,19 @@
             "amount": 12.95,
             "payment_mode": "Cash",
             "created_at": 1775903512,
+            "approved_by": "Administrator"
+        },
+        {
+            "id": "payment_69e1f4976a5899.30728027",
+            "transaction_id": "TXN-4D9355D6-20260417105135",
+            "employee_id": 1775645858,
+            "employee_name": "Stephen Otieno Oduor",
+            "company_id": 0,
+            "hours_paid": 0.26,
+            "hourly_rate": 60,
+            "amount": 15.600000000000001,
+            "payment_mode": "Cash",
+            "created_at": 1776415895,
             "approved_by": "Administrator"
         }
     ]

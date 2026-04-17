@@ -99,6 +99,7 @@ $totalWorkedHours = (float)$currentUser['pending_hours']
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -122,7 +123,7 @@ $totalWorkedHours = (float)$currentUser['pending_hours']
         </div>
 
         <?php if ($flash): ?>
-            <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+            <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
         <?php endif; ?>
 
         <div class="card">
@@ -173,13 +174,14 @@ $totalWorkedHours = (float)$currentUser['pending_hours']
                     </span>
                 </p>
                 <?php if ($isPaused): ?>
-                    <p
-                        class="helper-text"
-                        data-target="break-timer"
-                        data-break-start="<?php echo e((int)($currentUser['break_started_at'] ?? 0)); ?>"
-                    >
-                        Current break: <?php echo e(formatDuration($breakSeconds)); ?>
-                    </p>
+                <p
+                    class="helper-text"
+                    data-target="break-timer"
+                    data-break-start="<?php echo e((int)($currentUser['break_started_at'] ?? 0)); ?>"
+                    data-label-prefix="Current break: "
+                >
+                    Current break: <?php echo e(formatDuration($breakSeconds)); ?>
+                </p>
                 <?php endif; ?>
                 <p
                     class="helper-text total-hours-label"
@@ -189,6 +191,7 @@ $totalWorkedHours = (float)$currentUser['pending_hours']
                     data-break-start="<?php echo e((int)($currentUser['break_started_at'] ?? 0)); ?>"
                     data-break-seconds="<?php echo e((int)($currentUser['accumulated_break_seconds'] ?? 0)); ?>"
                     data-paused="<?php echo $isPaused ? 'true' : 'false'; ?>"
+                    data-label-prefix="Total worked hours: "
                 >
                     Total worked hours: <?php echo number_format($totalWorkedHours, 2); ?> hrs
                 </p>
@@ -214,53 +217,6 @@ $totalWorkedHours = (float)$currentUser['pending_hours']
         </div>
     </div>
 
-    <script>
-        const navToggle = document.querySelector('.nav-toggle');
-        const navPanel = document.querySelector('.nav-panel');
-        const timerNode = document.querySelector('[data-target="timer"]');
-        const workedHoursNode = document.querySelector('[data-target="worked-hours"]');
-        const breakTimerNode = document.querySelector('[data-target="break-timer"]');
-
-        function formatDuration(totalSeconds) {
-            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-            const seconds = String(totalSeconds % 60).padStart(2, '0');
-            return `${hours}:${minutes}:${seconds}`;
-        }
-
-        if (navToggle && navPanel) {
-            navToggle.addEventListener('click', () => {
-                const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-                navToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-                navPanel.classList.toggle('is-open');
-            });
-        }
-
-        if (timerNode) {
-            const startTime = Number(timerNode.dataset.startTime || 0);
-            const breakStart = Number(timerNode.dataset.breakStart || 0);
-            const baseBreakSeconds = Number(timerNode.dataset.breakSeconds || 0);
-            const isPaused = timerNode.dataset.paused === 'true';
-            const baseHours = workedHoursNode ? Number(workedHoursNode.dataset.baseHours || 0) : 0;
-
-            const updateTimer = () => {
-                const now = Math.floor(Date.now() / 1000);
-                const currentBreakSeconds = isPaused && breakStart > 0 ? Math.max(0, now - breakStart) : 0;
-                const elapsed = Math.max(0, now - startTime - baseBreakSeconds - currentBreakSeconds);
-                timerNode.textContent = formatDuration(elapsed);
-
-                if (workedHoursNode) {
-                    workedHoursNode.textContent = `Total worked hours: ${(baseHours + (elapsed / 3600)).toFixed(2)} hrs`;
-                }
-
-                if (breakTimerNode && isPaused) {
-                    breakTimerNode.textContent = `Current break: ${formatDuration(currentBreakSeconds)}`;
-                }
-            };
-
-            updateTimer();
-            setInterval(updateTimer, 1000);
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>

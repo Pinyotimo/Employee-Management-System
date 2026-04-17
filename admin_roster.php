@@ -91,7 +91,7 @@ $flash = getFlash();
                 <p>Monitor who is currently working and keep task assignments current. Use View to open employee profile, reset credentials, or edit/delete.</p>
             </div>
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
             <div class="table-responsive">
                 <table class="roster-table">
@@ -155,6 +155,7 @@ $flash = getFlash();
                             data-break-start="<?php echo e((int)($u['break_started_at'] ?? 0)); ?>"
                             data-break-seconds="<?php echo e((int)($u['accumulated_break_seconds'] ?? 0)); ?>"
                             data-paused="<?php echo $u['status'] === 'paused' ? 'true' : 'false'; ?>"
+                            data-label-prefix=""
                         >
                             <?php echo number_format($workedHours, 2); ?> hrs
                         </b>
@@ -177,57 +178,6 @@ $flash = getFlash();
         </div>
     </div>
 
-    <script>
-        const navToggle = document.querySelector('.nav-toggle');
-        const navPanel = document.querySelector('.nav-panel');
-        const timerNodes = document.querySelectorAll('[data-target="timer"]');
-        const workedHourNodes = document.querySelectorAll('[data-target="worked-hours"]');
-
-        function formatDuration(totalSeconds) {
-            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-            const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-            const seconds = String(totalSeconds % 60).padStart(2, '0');
-            return `${hours}:${minutes}:${seconds}`;
-        }
-
-        if (navToggle && navPanel) {
-            navToggle.addEventListener('click', () => {
-                const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-                navToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-                navPanel.classList.toggle('is-open');
-            });
-        }
-
-        function updateLiveTimers() {
-            const now = Math.floor(Date.now() / 1000);
-            timerNodes.forEach((node) => {
-                const startTime = Number(node.dataset.startTime || 0);
-                const breakStart = Number(node.dataset.breakStart || 0);
-                const baseBreakSeconds = Number(node.dataset.breakSeconds || 0);
-                const isPaused = node.dataset.paused === 'true';
-                const currentBreakSeconds = isPaused && breakStart > 0 ? Math.max(0, now - breakStart) : 0;
-                const elapsed = Math.max(0, now - startTime - baseBreakSeconds - currentBreakSeconds);
-                node.textContent = formatDuration(elapsed);
-            });
-
-            workedHourNodes.forEach((node) => {
-                const baseHours = Number(node.dataset.baseHours || 0);
-                const startTime = Number(node.dataset.startTime || 0);
-                const breakStart = Number(node.dataset.breakStart || 0);
-                const baseBreakSeconds = Number(node.dataset.breakSeconds || 0);
-                const isPaused = node.dataset.paused === 'true';
-                const currentBreakSeconds = isPaused && breakStart > 0 ? Math.max(0, now - breakStart) : 0;
-                const extraHours = startTime > 0
-                    ? Math.max(0, now - startTime - baseBreakSeconds - currentBreakSeconds) / 3600
-                    : 0;
-                node.textContent = `${(baseHours + extraHours).toFixed(2)} hrs`;
-            });
-        }
-
-        if (timerNodes.length > 0 || workedHourNodes.length > 0) {
-            updateLiveTimers();
-            setInterval(updateLiveTimers, 1000);
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
