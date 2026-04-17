@@ -69,6 +69,7 @@ $flash = getFlash();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payroll Manager</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -101,8 +102,9 @@ $flash = getFlash();
                 <p>Review unpaid hours and approve the amount to move into confirmed earnings.</p>
             </div>
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
+            <div class="table-responsive">
             <table>
                 <tr>
                     <th>Employee Name</th>
@@ -113,11 +115,11 @@ $flash = getFlash();
                 </tr>
                 <?php foreach ($db['users'] as $u): if ($u['role'] !== 'admin' && ($u['company_id'] ?? 0) === ($currentAdmin['company_id'] ?? 0)): ?>
                 <tr>
-                    <td><b><?php echo e($u['name']); ?></b></td>
-                    <td>$<?php echo number_format((float)$u['hourly_rate'], 2); ?>/hr</td>
-                    <td><b><?php echo number_format((float)$u['pending_hours'], 2); ?> hrs</b></td>
-                    <td><b style="color: green;">$<?php echo number_format((float)$u['approved_pay'], 2); ?></b></td>
-                    <td>
+                    <td data-label="Employee Name"><b><?php echo e($u['name']); ?></b></td>
+                    <td data-label="Hourly Rate">$<?php echo number_format((float)$u['hourly_rate'], 2); ?>/hr</td>
+                    <td data-label="Pending Hours"><b><?php echo number_format((float)$u['pending_hours'], 2); ?> hrs</b></td>
+                    <td data-label="Approved Pay"><b style="color: green;">$<?php echo number_format((float)$u['approved_pay'], 2); ?></b></td>
+                    <td data-label="Payroll Action">
                         <form method="POST" class="payroll-form">
                             <input type="hidden" name="action" value="approve_pay">
                             <input type="hidden" name="employee_id" value="<?php echo e($u['id']); ?>">
@@ -138,20 +140,9 @@ $flash = getFlash();
                 </tr>
                 <?php endif; endforeach; ?>
             </table>
+            </div>
         </div>
     </div>
-
-    <script>
-        const navToggle = document.querySelector('.nav-toggle');
-        const navPanel = document.querySelector('.nav-panel');
-
-        if (navToggle && navPanel) {
-            navToggle.addEventListener('click', () => {
-                const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-                navToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-                navPanel.classList.toggle('is-open');
-            });
-        }
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
