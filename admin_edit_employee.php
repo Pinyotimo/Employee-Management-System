@@ -99,6 +99,7 @@ $user = $db['users'][$userIndex];
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Employee - <?php echo e($user['name']); ?></title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -115,7 +116,7 @@ $user = $db['users'][$userIndex];
             </div>
 
             <?php if ($flash): ?>
-                <div class="alert alert-<?php echo e($flash['type']); ?>"><?php echo e($flash['message']); ?></div>
+                <div class="alert alert-<?php echo e($flash['type']); ?>" data-auto-dismiss="4000"><?php echo e($flash['message']); ?></div>
             <?php endif; ?>
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo e($error); ?></div>
@@ -124,7 +125,7 @@ $user = $db['users'][$userIndex];
             <form method="POST" class="auth-form">
                 <input type="hidden" name="action" value="update_employee">
                 <input type="hidden" name="employee_id" value="<?php echo e($user['id']); ?>">
-                
+                <div class="form-grid">
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" name="name" value="<?php echo e($user['name']); ?>" required>
@@ -176,7 +177,7 @@ $user = $db['users'][$userIndex];
                     <label>Current Task</label>
                     <input type="text" name="task" value="<?php echo e($user['task']); ?>" placeholder="No task assigned yet.">
                 </div>
-                
+                </div>
                 <button type="submit" class="auth-submit" style="margin-top: 10px;">Save Changes</button>
             </form>
 
@@ -185,5 +186,6 @@ $user = $db['users'][$userIndex];
             </p>
         </div>
     </div>
+    <script src="app.js"></script>
 </body>
 </html>
